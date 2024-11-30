@@ -1,10 +1,10 @@
 import sqlite3
 
 class Database:
-    def __init__(self, db_path="database.db"):
+    def __init__(self, db_path="C:/Users/Dreimond/PycharmProjects/FinalBotSupport/data_base/database.db"):
+        self.db_path = db_path
         self.connection = sqlite3.connect(db_path)
         self.create_table()
-        self.db_path = db_path
 
     def create_table(self):
         with self.connection:
@@ -30,7 +30,6 @@ class Database:
                  two_factor_an, two_factor_ae, name, date,
                  Account, Activating, KYSREST,KYSDATA)
             )
-
 
     def get_user_by_email(self, email):
         with sqlite3.connect(self.db_path) as connection:
@@ -91,3 +90,15 @@ class Database:
             cursor = connection.cursor()
             query = f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type};"
             cursor.execute(query)
+
+    def get_user_by_email_ch(self,email):
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.execute(
+                "SELECT * FROM users WHERE email = ?", (email,)
+            )
+            result = cursor.fetchone()
+            print(f"check: {result}")
+            return result
+
+    def some_new(self,email):
+        print(email)
