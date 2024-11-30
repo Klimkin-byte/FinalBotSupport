@@ -1,8 +1,8 @@
-from data_base.data_base import *
+from data_base.data_base_users import *
 import sqlite3
-from data_base.data_base import Database
+from data_base.data_base_users import Database
 
-db = Database("database.db")
+db = Database("C:/Users/Dreimond/PycharmProjects/FinalBotSupport/data_base/database.db")
 email_for_function=[]
 
 def email_for_all(old_email):

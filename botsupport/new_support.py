@@ -6,9 +6,9 @@ from dotenv import dotenv_values
 from supporthelper.helper import *
 from telebot.apihelper import answer_callback_query
 import os
-from data_base.data_base import Database
+from data_base.data_base_users import Database
 
-db = Database("database.db")
+db = Database("C:/Users/Dreimond/PycharmProjects/FinalBotSupport/data_base/database.db")
 
 SAVE_FOLDER = 'photos'
 
