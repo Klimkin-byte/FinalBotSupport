@@ -1,3 +1,12 @@
+from data_base.data_base import *
+import sqlite3
+from data_base.data_base import Database
+
+db = Database("database.db")
+email_for_function=[]
+
+def email_for_all(old_email):
+    email_for_function.append(old_email)
 
 def reademail():
     try:
@@ -27,112 +36,111 @@ def reademail_appealing():
         return ""
 
 def changes(new_email,old_email):
-    list_emails=reademail()
-    print(old_email)
-    if old_email in list_emails:
-        list_emails=[new_email if email == old_email else email for email in list_emails]
-        with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-            file_slov.write(" ".join(list_emails))
-        print("Email changes!")
+    updated_rows = db.update_user_field(old_email, "email", new_email)
+    if updated_rows:
+        print("Update.")
     else:
-        print("no email.")
+        print("not find.")
+    return new_email
 
-def pass_changes(old_pass,new_pass):
-    list_pass=reademail()
-    if old_pass in list_pass:
-        list_pass=[new_pass if password == old_pass else password for password in list_pass]
-        with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-            file_slov.write(" ".join(list_pass))
-        print("Password changes!")
+
+def pass_changes(user_new_password,old_email):
+    updated_rows = db.update_user_field(old_email, "password", user_new_password)
+    if updated_rows:
+        print("Update.")
     else:
-        print("no password.")
+        print("not find.")
 
-def fa_email():
-    list_fa = reademail()
-    if "2FAE-True" in list_fa:
-        list_fa=["2FAE-False" if fa_mail == "2FAE-True" else fa_mail for fa_mail in list_fa]
-        with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-            file_slov.write(" ".join(list_fa))
-            print("Email fa changes!")
+def fa_email(old_email):
+    check_data = {"two_factor_ae": "True"}
+    if db.check_multiple_conditions(check_data):
+        updated_rows = db.update_user_field(old_email, "two_factor_ae", "False")
+        if updated_rows:
+            print("Update.")
+        else:
+            print("not find.")
     else:
-        list_fa = ["2FAE-True" if fa_mail == "2FAE-False" else fa_mail for fa_mail in list_fa]
-        with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-            file_slov.write(" ".join(list_fa))
-            print("Email fa changes!")
+        updated_rows = db.update_user_field(old_email, "two_factor_ae", "True")
+        if updated_rows:
+            print("Update.")
+        else:
+            print("not find.")
 
-def fa_number():
-    list_number = reademail()
-    if "2FAN-True" in list_number:
-        list_fa=["2FAN-False" if fa_mail == "2FAN-True" else fa_mail for fa_mail in list_number]
-        with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-            file_slov.write(" ".join(list_fa))
-            print("number fa changes!")
+def fa_number(old_email):
+    check_data = {"two_factor_an": "True"}
+    if db.check_multiple_conditions(check_data):
+        updated_rows = db.update_user_field(old_email, "two_factor_an", "False")
+        if updated_rows:
+            print("Update.")
+        else:
+            print("not find.")
     else:
-        list_fa = ["2FAN-True" if fa_mail == "2FAN-False" else fa_mail for fa_mail in list_number]
-        with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-            file_slov.write(" ".join(list_fa))
-            print("number fa changes!")
+        updated_rows = db.update_user_field(old_email, "two_factor_an", "True")
+        if updated_rows:
+            print("Update.")
+        else:
+            print("not find.")
 
-def fa_app():
-    list_app = reademail()
-    if "2FAA-True" in list_app:
-        list_fa=["2FAA-False" if fa_mail == "2FAA-True" else fa_mail for fa_mail in list_app]
-        with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-            file_slov.write(" ".join(list_fa))
-            print("number fa changes!")
+
+def fa_app(old_email):
+    check_data = {"two_factor_aa": "True"}
+    if db.check_multiple_conditions(check_data):
+        updated_rows = db.update_user_field(old_email, "two_factor_aa", "False")
+        if updated_rows:
+            print("Update.")
+        else:
+            print("not find.")
     else:
-        list_fa = ["2FAA-True" if fa_mail == "2FAA-False" else fa_mail for fa_mail in list_app]
-        with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-            file_slov.write(" ".join(list_fa))
-            print("number fa changes!")
+        updated_rows = db.update_user_field(old_email, "two_factor_aa", "True")
+        if updated_rows:
+            print("Update.")
+        else:
+            print("not find.")
 
-def fa_key():
-    list_key = reademail()
-    if "2FAK-True" in list_key:
-        list_fa=["2FAK-False" if fa_mail == "2FAK-True" else fa_mail for fa_mail in list_key]
-        with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-            file_slov.write(" ".join(list_fa))
-            print("number fa changes!")
+def fa_key(old_email):
+    check_data = {"two_factor_ak": "True"}
+    if db.check_multiple_conditions(check_data):
+        updated_rows = db.update_user_field(old_email, "two_factor_ak", "False")
+        if updated_rows:
+            print("Update.")
+        else:
+            print("not find.")
     else:
-        list_fa = ["2FAK-True" if fa_mail == "2FAK-False" else fa_mail for fa_mail in list_key]
-        with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-            file_slov.write(" ".join(list_fa))
-            print("number fa changes!")
+        updated_rows = db.update_user_field(old_email, "two_factor_ak", "True")
+        if updated_rows:
+            print("Update.")
+        else:
+            print("not find.")
 
 
-def new_name(user_name_reset): ###нужно постоянно менять имя так как не получаем данных с базы данных
-    list_name = reademail()
-    if "Masik" in list_name:
-        list_fa_name=[user_name_reset if fa_mail == "Masik" else fa_mail for fa_mail in list_name]
-        with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-            file_slov.write(" ".join(list_fa_name))
-            print("number fa changes!")
+def new_name(user_name_reset,old_email):
+    updated_rows = db.update_user_field(old_email, "name", user_name_reset)
+    if updated_rows:
+        print("Update.")
     else:
-        print("no name")
+        print("not find.")
 
-def new_date(user_date_reset): ###нужно постоянно менять date
-    list_date = reademail()
-    if "13.10.2015" in list_date:
-        list_fa_name = [user_date_reset if fa_mail == "13.10.2015" else fa_mail for fa_mail in list_date]
-        with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-            file_slov.write(" ".join(list_fa_name))
-            print("number fa changes!")
+def new_date(user_date_reset,old_email):
+    updated_rows = db.update_user_field(old_email, "date", user_date_reset)
+    if updated_rows:
+        print("Update.")
     else:
-        print("no date")
+        print("not find.")
 
-def reactivation():
-    list_reactivation = reademail()
-    if "Account-True" in list_reactivation:
-        list_fa = ["Account-False" if fa_mail == "Account-True" else fa_mail for fa_mail in list_reactivation]
-        with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-            file_slov.write(" ".join(list_fa))
-            print("reactivation reset!")
-
+def reactivation(old_email):
+    check_data = {"Account": "True"}
+    if db.check_multiple_conditions(check_data):
+        updated_rows = db.update_user_field(old_email, "Account", "False")
+        if updated_rows:
+            print("Update.")
+        else:
+            print("not find.")
     else:
-        list_fa = ["Account-False" if fa_mail == "Account-False" else fa_mail for fa_mail in list_reactivation]
-        with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-            file_slov.write(" ".join(list_fa))
-            print("reactivation reset!")
+        updated_rows = db.update_user_field(old_email, "Account", "False")
+        if updated_rows:
+            print("Update.")
+        else:
+            print("not find.")
 
 def inheritance_data(data,user_id):
     list_data=reademail_name()
@@ -143,12 +151,13 @@ def inheritance_data(data,user_id):
         print("reactivation reset!")
         print(list_data)
 
-def activating_acc():
-    list_reactivation = reademail()
-    if "Activating-False" in list_reactivation:
-        list_fa = ["Activating-True" if fa_mail == "Activating-False" else fa_mail for fa_mail in list_reactivation]
-        with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-            file_slov.write(" ".join(list_fa))
+def activating_acc(old_email):
+    check_data = {"Activating": "False"}
+    if db.check_multiple_conditions(check_data):
+        updated_rows = db.update_user_field(old_email, "Account", "True")
+        if updated_rows:
+            print("Update.")
+        else:
             print("reactivation reset!")
     else:
         print("was activating")
@@ -158,23 +167,27 @@ def handle_photo(downloaded_file,file_name):
         new_file.write(downloaded_file)
 
 def kys_reset_types(answer_callback):
-    list_reset_kys = reademail()
-    if "KYSRESET-False" in list_reset_kys:
-        list_fa = [answer_callback if fa_mail == "KYSRESET-False" else fa_mail for fa_mail in list_reset_kys]
-        with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-            file_slov.write(" ".join(list_fa))
-            file_slov.write(" KYSRESET-False")
-            print("KYS reset!")
+    data="".join(email_for_function)
+    print(data)
+    check_data = {"KYSREST": "False"}
+    if db.check_multiple_conditions(check_data):
+        updated_rows1 = db.update_user_field(data, "KYSREST", "False")
+        updated_rows = db.update_user_field(data, "KYSDATA", "answer_callback")
+        if updated_rows and updated_rows1:
+            print("Update.")
+        else:
+            print("reactivation reset!")
     else:
         print("was reset")
 
 def new_address(user_new_address):
-    list_reset_kys = reademail()
-    with open("C:/Users/Dreimond/Desktop/outpython.txt", "w", encoding='utf-8') as file_slov:
-        file_slov.write(" ".join(list_reset_kys))
-        file_slov.write(" ")
-        file_slov.write(user_new_address)
-        print("new address")
+    data="".join(email_for_function)
+    updated_rows = db.update_user_field(data, "PersonAdress", user_new_address)
+    if updated_rows:
+        print("Update.")
+    else:
+        print("reactivation reset!")
+
 
 def user_problem_appealing(user_appealing_text, user_id):
     list_appealing=reademail_appealing()
@@ -185,3 +198,4 @@ def user_problem_appealing(user_appealing_text, user_id):
         file_slov.write("\n")
         print("apellianing correct!")
         print(list_appealing)
+

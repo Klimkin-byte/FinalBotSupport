@@ -1,12 +1,14 @@
-import random
 from telebot import types
 import telebot
 import requests
 import config
+from dotenv import dotenv_values
 from supporthelper.helper import *
 from telebot.apihelper import answer_callback_query
 import os
+from data_base.data_base import Database
 
+db = Database("database.db")
 
 SAVE_FOLDER = 'photos'
 
@@ -20,7 +22,6 @@ needHelp = []
 
 if not os.path.exists(SAVE_FOLDER):
     os.makedirs(SAVE_FOLDER)
-
 bot=telebot.TeleBot("")
 
 
@@ -41,34 +42,33 @@ def typessupport(user_id):
 def callback_query(call):
     if call.data == '1':
         answer_callback=" The documents have expired"
-        bot.answer_callback_query(call.id, "You choose The documents have expired")
+        bot.answer_callback_query(call.id, "You choose The documents have expired✅")
         kys_reset_types(answer_callback)
     elif call.data == '2':
         answer_callback = " Update your country of residence"
-        bot.answer_callback_query(call.id, "You choose Update your country of residence ")
+        bot.answer_callback_query(call.id, "You choose Update your country of residence ✅")
         kys_reset_types(answer_callback)
     elif call.data == '3':
         answer_callback = " Name changed in documents"
-        bot.answer_callback_query(call.id, "You choose Name changed in documents")
+        bot.answer_callback_query(call.id, "You choose Name changed in documents✅")
         kys_reset_types(answer_callback)
     elif call.data == '4':
         answer_callback = " Code changed in documents"
-        bot.answer_callback_query(call.id, "You choose  Code changed in documents")
+        bot.answer_callback_query(call.id, "You choose  Code changed in documents✅")
         kys_reset_types(answer_callback)
     elif call.data == '5':
         answer_callback = " Nationality changed"
-        bot.answer_callback_query(call.id, "You choose  Nationality changed")
+        bot.answer_callback_query(call.id, "You choose  Nationality changed✅")
         kys_reset_types(answer_callback)
     elif call.data == '6':
         answer_callback = " Updating documents for using the fiat channel"
-        bot.answer_callback_query(call.id, "You choose  Updating documents for using the fiat channel")
+        bot.answer_callback_query(call.id, "You choose  Updating documents for using the fiat channel✅")
         kys_reset_types(answer_callback)
     elif call.data == '7':
         answer_callback = " Update documents according to Binance Card requirements"
-        bot.answer_callback_query(call.id, "You choose  Update documents according to Binance Card requirements")
+        bot.answer_callback_query(call.id, "You choose  Update documents according to Binance Card requirements✅")
         kys_reset_types(answer_callback)
-
-    bot.edit_message_text("Вы выбрали: " + answer_callback, chat_id=call.message.chat.id, message_id=call.message.message_id)
+    bot.edit_message_text("You choose: " + answer_callback, chat_id=call.message.chat.id, message_id=call.message.message_id)
 
 
 @bot.message_handler(commands=["WriteToSupport"])
@@ -162,90 +162,94 @@ def buttonsupport(message):
         user_emails[user_id] = None
 
     if user_state[user_id] == "waiting_for_photo":
-        print("222")
         try:
             photo = message.photo[-1]
             file_info = bot.get_file(photo.file_id)
             downloaded_file = bot.download_file(file_info.file_path)
             file_name = f"{SAVE_FOLDER}/{photo.file_id}.jpg"
             handle_photo(downloaded_file, file_name)
-            bot.send_message(user_id, f"Your photo has been saved as {file_name}.")
+            bot.send_message(user_id, f"Your photo has been saved as {file_name}.✅")
             user_state[user_id] = None
-            print("1111")
         except Exception as e:
             bot.send_message(user_id, f"An error occurred: {e}")
 
     if user_state.get(user_id) == "waiting_for_new_appealing":
         user_appealing_text=message.text.strip()
         user_problem_appealing(user_appealing_text, user_id)
-        bot.send_message(user_id, f"Your data {user_appealing_text}")
+        bot.send_message(user_id, f"Your data {user_appealing_text}✅")
         user_id = message.from_user.id
 
     if user_state.get(user_id) == "waiting_for_data":
         user_date_reset = message.text.strip()
         data_about=str(user_date_reset)
         inheritance_data(data_about,user_id)
-        bot.send_message(user_id, f"Your data {user_date_reset}")
+        bot.send_message(user_id, f"Your data {user_date_reset}✅")
         user_id = message.from_user.id
     if user_state.get(user_id)=="waiting_for_birth_reset":
        user_date_reset=message.text.strip()
-       new_date(user_date_reset)
-       bot.send_message(user_id, f"Your name date {user_date_reset}")
+       old_email = user_new_emails[user_id]
+       new_date(user_date_reset, old_email)
+       bot.send_message(user_id, f"Your new date {user_date_reset}✅")
 
     if user_state.get(user_id)=="waiting_for_new_address":
         user_new_address = message.text.strip()
         new_address(user_new_address)
-        bot.send_message(user_id, f"Your address reset {user_new_address}")
+        bot.send_message(user_id, f"Your address reset {user_new_address}✅")
     if user_state.get(user_id)=="waiting_for_name_reset":
        user_name_reset=message.text.strip()
        name_user=user_name_reset
-       new_name(name_user)
-       bot.send_message(user_id, f"Your name reset {name_user}")
+       old_email = user_new_emails[user_id]
+       new_name(name_user,old_email)
+       bot.send_message(user_id, f"Your name reset {name_user}✅")
        print(user_name_reset)
     if user_state.get(user_id)=="waiting_for_password_reset":
-        user_new_password=message.text.split()
+        user_new_password=message.text.strip()
         old_pass=user_passwords[user_id]
-        pass_changes(old_pass,user_new_password)
-        print(old_pass)
-        print(user_new_password)
+        user_pass_data=db.get_user_by_password(old_pass)
+        if not user_pass_data:
+            bot.send_message(user_id, f"Your password not correct,write again❌")
+        else:
+            old_email = user_new_emails[user_id]
+            pass_changes(user_new_password,old_email)
+            bot.send_message(user_id, f"Your password was reset from {old_pass} on {user_new_password}✅")
+            print(old_email)
     if user_state.get(user_id)=="waiting_for_new_email":
         user_new_email = message.text.strip()
         old_email =  user_new_emails[user_id]
         changes(user_new_email, old_email)
-        bot.send_message(user_id, f"Ваш email was reset from {old_email} on {user_new_email}")
+        bot.send_message(user_id, f"Your email was reset from {old_email} on {user_new_email}✅")
         user_state[user_id] = None
     if user_state.get(user_id) == "waiting_for_email":
         user_email = message.text.strip()
         bot.send_message(user_id, f" {user_email}")
         user_new_emails[user_id] = user_email
-        if user_email not in reademail():
+        user_data = db.get_user_by_email(user_email)
+        email_for_all(user_email)
+        if not user_data:
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            butOne = types.KeyboardButton("email")
-            butTwo = types.KeyboardButton("number")
-            butThree = types.KeyboardButton("app autificator")
-            butFour = types.KeyboardButton("key to enter")
-            butFive = types.KeyboardButton("<----")
-            markup.add(butOne, butTwo, butThree, butFour, butFive)
-            bot.send_message(message.chat.id, "Email was not registered.Try again ", reply_markup=markup)
+            butOne = types.KeyboardButton("<----")
+            butTwo = types.KeyboardButton("/close")
+            markup.add(butOne, butTwo)
+            bot.send_message(message.chat.id, "Email was not registered.🔒Try again ", reply_markup=markup)
             user_state[user_id] = "waiting_for_email"
         else:
-            bot.send_message(message.chat.id,"Email was registred ")
-            bot.send_message(message.chat.id, "Write your password ")
+            bot.send_message(message.chat.id,"Email was registred✅ ")
+            bot.send_message(message.chat.id, "Write your password 🖊️")
             user_state[user_id] = None
             user_state[user_id] = "waiting_for_password"
     elif user_state.get(user_id) == "waiting_for_password":
         user_password = message.text.strip()
         user_passwords[user_id]=user_password
-        if user_password in reademail():
-            bot.send_message(user_id, f" Correct Password ")
+        user_data_pass=db.get_user_by_password(user_password)
+        if not user_data_pass:
+            bot.send_message(user_id, f" Incorrect password write again❌🖊️ ")
+            user_state[user_id] = "waiting_for_password"
+        else:
+            bot.send_message(user_id, f" Correct Password 🔓")
             typessupport(user_id)
             user_state[user_id] = None
-        else:
-            bot.send_message(user_id, f" incorrect ")
-            user_state[user_id] = "waiting_for_password"
-            user_state[user_id] = None
     if message.text == "Autification":
-        bot.send_message(user_id, "Please enter your email:")
+        bot.send_message(user_id, "Please enter your email🖊️:")
         user_state[user_id] = "waiting_for_email"
 
     if message.text == "Account":
@@ -260,7 +264,7 @@ def buttonsupport(message):
         butEight = types.KeyboardButton("/close")
         butNine = types.KeyboardButton("Email reset")
         markup.add(butOne, butTwo, butThree, butFive, butSix, butFour, butSeven, butEight,butNine)
-        bot.send_message(message.chat.id, "Choose ", reply_markup=markup)
+        bot.send_message(message.chat.id, "Choose ⌛️", reply_markup=markup)
     elif message.text == "KYS":
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         butOne = types.KeyboardButton("Appeal regarding facial verification rejected")
@@ -280,7 +284,7 @@ def buttonsupport(message):
         butFive = types.KeyboardButton("<----")
         butSix = types.KeyboardButton("/close")
         markup.add(butOne, butTwo, butThree, butFive, butSix, butFour)
-        bot.send_message(message.chat.id, "Choose ", reply_markup=markup)
+        bot.send_message(message.chat.id, "Choose ⌛️", reply_markup=markup)
     elif message.text == "Buying/selling cryptocurrency (fiat/P2P)":
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         butOne = types.KeyboardButton("Appeal regarding non-receipt of fiat deposit")
@@ -294,7 +298,7 @@ def buttonsupport(message):
         butNine = types.KeyboardButton("<----")
         butTen = types.KeyboardButton("/close")
         markup.add(butOne, butTwo, butThree, butFive, butSix, butFour, butSeven, butEight, butNine, butTen)
-        bot.send_message(message.chat.id, "Choose ", reply_markup=markup)
+        bot.send_message(message.chat.id, "Choose ⌛️", reply_markup=markup)
     elif message.text == "Other":
         bot.send_message(
             message.chat.id,
@@ -324,7 +328,7 @@ def buttonsupport(message):
         butFive = types.KeyboardButton("Other")
         butSix = types.KeyboardButton("Write to support")
         markup.add(butOne, butTwo, butThree, butFive, butSix, butFour)
-        bot.send_message(message.chat.id, "Choose ", reply_markup=markup)
+        bot.send_message(message.chat.id, "Choose ⌛️", reply_markup=markup)
     elif message.text == "Reset 2FA":
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         butOne = types.KeyboardButton("email")
@@ -333,40 +337,52 @@ def buttonsupport(message):
         butFour = types.KeyboardButton("key to enter")
         butFive = types.KeyboardButton("<----")
         markup.add(butOne, butTwo, butThree, butFour,butFive)
-        bot.send_message(message.chat.id, "Choose to reset ", reply_markup=markup)
+        bot.send_message(message.chat.id, "Choose to reset ⌛️", reply_markup=markup)
     elif message.text == "Email reset":
-        bot.send_message(user_id, "Please enter your  new email:")
+        bot.send_message(user_id, "Please enter your  new email🖊️:")
         user_state[user_id] = "waiting_for_new_email"
     elif message.text == "email":
-        if "2FAE-True" in reademail():
-            bot.send_message(message.chat.id, "Email 2FA delete ")
-            fa_email()
+        check_data={"two_factor_ae":"True"}
+        if db.check_multiple_conditions(check_data):
+            bot.send_message(message.chat.id, "Email 2FA delete❌ ")
+            old_email = user_new_emails[user_id]
+            fa_email(old_email)
         else:
-            bot.send_message(message.chat.id, "Email 2FA Connect ")
-            fa_email()
+            bot.send_message(message.chat.id, "Email 2FA Connect  ✅")
+            old_email = user_new_emails[user_id]
+            fa_email(old_email)
     elif message.text == "number":
-        if "2FAN-True" in reademail():
-            bot.send_message(message.chat.id, "number 2FA delete ")
-            fa_number()
+        check_data={"two_factor_an":"True"}
+        if db.check_multiple_conditions(check_data):
+            bot.send_message(message.chat.id, "number 2FA delete ❌")
+            old_email = user_new_emails[user_id]
+            fa_number(old_email)
         else:
-            bot.send_message(message.chat.id, "Number 2FA Connect ")
-            fa_number()
+            bot.send_message(message.chat.id, "Number 2FA Connect  ✅")
+            old_email = user_new_emails[user_id]
+            fa_number(old_email)
     elif message.text == "app autificator":
-        if "2FAA-True" in reademail():
-            bot.send_message(message.chat.id, "App 2FA delete ")
-            fa_app()
+        check_data={"two_factor_aa":"True"}
+        if db.check_multiple_conditions(check_data):
+            bot.send_message(message.chat.id, "App 2FA delete ❌")
+            old_email = user_new_emails[user_id]
+            fa_app(old_email)
         else:
-            bot.send_message(message.chat.id, "App 2FA Connect ")
-            fa_app()
+            bot.send_message(message.chat.id, "App 2FA Connect  ✅")
+            old_email = user_new_emails[user_id]
+            fa_app(old_email)
     elif message.text == "key to enter":
-        if "2FAK-True" in reademail():
-            bot.send_message(message.chat.id, "Key 2FA delete ")
-            fa_key()
+        check_data={"two_factor_ak":"True"}
+        if db.check_multiple_conditions(check_data):
+            bot.send_message(message.chat.id, "Key 2FA delete ❌")
+            old_email = user_new_emails[user_id]
+            fa_key(old_email)
         else:
-            bot.send_message(message.chat.id, "Key 2FA Connect ")
-            fa_key()
+            bot.send_message(message.chat.id, "Key 2FA Connect ✅ ")
+            old_email = user_new_emails[user_id]
+            fa_key(old_email)
     if message.text == "Password reset":
-        bot.send_message(user_id, "Please enter your  new password:")
+        bot.send_message(user_id, "Please enter your  new password🖊️:")
         user_state[user_id] = "waiting_for_password_reset"
     if message.text == "Correction of name/date of birth":
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -376,10 +392,10 @@ def buttonsupport(message):
         markup.add(butOne, butTwo,butThree)
         bot.send_message(message.chat.id, "Choose to correct ", reply_markup=markup)
     elif message.text == "Correction of name":
-        bot.send_message(user_id, "Please enter your  new Name:")
+        bot.send_message(user_id, "Please enter your  new Name🖊️:")
         user_state[user_id] = "waiting_for_name_reset"
     elif message.text == "Correction date of birth":
-        bot.send_message(user_id, "Please enter your  new birth format->(10.10.1900):")
+        bot.send_message(user_id, "Please enter your  new birth format🖊️->(10.10.1900):")
         user_state[user_id] = "waiting_for_birth_reset"
     if message.text == "Account reactivation":
         bot.send_message(
@@ -391,10 +407,11 @@ def buttonsupport(message):
         butOne = types.KeyboardButton("Accept reactivation")
         butTwo = types.KeyboardButton("<----")
         markup.add(butOne, butTwo)
-        bot.send_message(message.chat.id, "Choose to accept ", reply_markup=markup)
+        bot.send_message(message.chat.id, "Choose to accept ⌛️", reply_markup=markup)
     elif message.text == "Accept reactivation":
-        reactivation()
-        bot.send_message(user_id, " Reactivation was accept:")
+        old_email = user_new_emails[user_id]
+        reactivation(old_email)
+        bot.send_message(user_id, " Reactivation was accept:✅")
 
 
     if message.text == "Inheritance of inheritance":
@@ -416,11 +433,13 @@ Additional information
         user_state[user_id]="waiting_for_data"
 
     if message.text =="Failed to unlock account":
-        if "Activating-False" in reademail():
+        check_data = {"Activating": "True"}
+        if db.check_multiple_conditions(check_data):
             bot.send_message(message.chat.id, "Acc not need to activating ")
         else:
             bot.send_message(user_id, "Wait for activaiting:")
-            activating_acc()
+            old_email = user_new_emails[user_id]
+            activating_acc(old_email)
 
     if message.text=="Appeal regarding facial verification rejected":
         bot.send_message(user_id, " Do yo want facial verification rejected?:")
@@ -456,7 +475,7 @@ information required for the new process. Please confirm the need for resetting.
         button6 = types.InlineKeyboardButton("Updating documents for using the fiat channel.", callback_data='6')
         button7 = types.InlineKeyboardButton("Update documents according to Binance Card requirements", callback_data='7')
         markup.add(button1, button2, button3,button4,button5,button6,button7)
-        bot.send_message(message.chat.id, "Выберите одну из кнопок:", reply_markup=markup)
+        bot.send_message(message.chat.id, "Choose one button:", reply_markup=markup)
     if message.text=="Change of residence your address":
         bot.send_message(user_id, "Please enter your  new address:")
         user_state[user_id] = "waiting_for_new_address"
