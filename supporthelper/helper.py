@@ -1,4 +1,4 @@
-from data_base.data_base_users import *
+#from data_base.data_base_users import *
 import sqlite3
 from data_base.data_base_users import Database
 
@@ -52,63 +52,65 @@ def pass_changes(user_new_password,old_email):
         print("not find.")
 
 def fa_email(old_email):
-    check_data = {"two_factor_ae": "True"}
-    if db.check_multiple_conditions(check_data):
-        updated_rows = db.update_user_field(old_email, "two_factor_ae", "False")
+    check_data1 = {"two_factor_ae":"False"}
+    print(check_data1)
+    print(old_email)
+    if db.check_multiple_conditions(check_data1):
+        updated_rows = db.update_user_field(old_email, "two_factor_ae", "True")
         if updated_rows:
-            print("Update.")
+            print("Update1.")
         else:
             print("not find.")
     else:
-        updated_rows = db.update_user_field(old_email, "two_factor_ae", "True")
+        updated_rows = db.update_user_field(old_email, "two_factor_ae", "False")
         if updated_rows:
-            print("Update.")
+            print("Update2.")
         else:
             print("not find.")
 
 def fa_number(old_email):
-    check_data = {"two_factor_an": "True"}
+    check_data = {"two_factor_an":"True"}
     if db.check_multiple_conditions(check_data):
         updated_rows = db.update_user_field(old_email, "two_factor_an", "False")
         if updated_rows:
-            print("Update.")
+            print("Update1.")
         else:
             print("not find.")
     else:
         updated_rows = db.update_user_field(old_email, "two_factor_an", "True")
         if updated_rows:
-            print("Update.")
+            print("Update2.")
         else:
             print("not find.")
 
 
 def fa_app(old_email):
-    check_data = {"two_factor_aa": "True"}
+    check_data = {"two_factor_aa": "False"}
     if db.check_multiple_conditions(check_data):
-        updated_rows = db.update_user_field(old_email, "two_factor_aa", "False")
+        updated_rows = db.update_user_field(old_email, "two_factor_aa", "True")
         if updated_rows:
-            print("Update.")
+            print("Update1.")
         else:
             print("not find.")
     else:
-        updated_rows = db.update_user_field(old_email, "two_factor_aa", "True")
+        updated_rows = db.update_user_field(old_email, "two_factor_aa", "False")
         if updated_rows:
-            print("Update.")
+            print("Update2.")
         else:
             print("not find.")
 
 def fa_key(old_email):
-    check_data = {"two_factor_ak": "True"}
+    check_data = {"two_factor_ak": "False"}
     if db.check_multiple_conditions(check_data):
-        updated_rows = db.update_user_field(old_email, "two_factor_ak", "False")
+        updated_rows = db.update_user_field(old_email, "two_factor_ak", "True")
         if updated_rows:
-            print("Update.")
+            print("Update1.")
         else:
             print("not find.")
     else:
-        updated_rows = db.update_user_field(old_email, "two_factor_ak", "True")
+        updated_rows = db.update_user_field(old_email, "two_factor_ak", "False")
         if updated_rows:
-            print("Update.")
+            print("Update2.")
         else:
             print("not find.")
 
