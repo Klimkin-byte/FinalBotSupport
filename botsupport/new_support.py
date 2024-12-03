@@ -7,10 +7,15 @@ from supporthelper.helper import *
 from telebot.apihelper import answer_callback_query
 import os
 from data_base.data_base_users import Database
+from telebot.types import ReplyKeyboardRemove
 
 db = Database("C:/Users/Dreimond/PycharmProjects/FinalBotSupport/data_base/database.db")
 
 SAVE_FOLDER = 'photos'
+
+config_1 = dotenv_values("../.env")
+TOKEN = config_1.get('TOKEN')
+ADMIN_ID = config_1.get('ADMIN_ID')
 
 user_emails = {}
 user_state = {}
@@ -22,7 +27,7 @@ needHelp = []
 
 if not os.path.exists(SAVE_FOLDER):
     os.makedirs(SAVE_FOLDER)
-bot=telebot.TeleBot("111")
+bot=telebot.TeleBot(TOKEN)
 
 
 def typessupport(user_id):
@@ -90,7 +95,7 @@ def support(message):
     bot.send_message(
         message.chat.id,
         '''Wait a bit {0.first_name}, we sent your message to support! 
-        Please don't send any more messages. \nYou are in the queue.'''.format(message.from_user),
+Please don't send any more messages. \nYou are in the queue.'''.format(message.from_user),
         parse_mode="html"
     )
 
@@ -152,6 +157,18 @@ def start(message):
 @bot.message_handler(commands=["close"])
 def close(message):
     bot.send_message(message.chat.id,"<em><b>Thank you.We stay with you</b></em>",parse_mode="html")
+    bot.send_message(
+        message.chat.id,
+        "Goodbye!",
+        reply_markup=ReplyKeyboardRemove()
+    )
+    chat_id = message.chat.id
+    last_message_id = message.message_id
+    for msg_id in range(last_message_id, last_message_id - 100, -1):
+        try:
+            bot.delete_message(chat_id, msg_id)
+        except:
+            pass
 
 @bot.message_handler(content_types=['text','photo'])
 def buttonsupport(message):
@@ -341,17 +358,19 @@ def buttonsupport(message):
     elif message.text == "Email reset":
         bot.send_message(user_id, "Please enter your  new email🖊️:")
         user_state[user_id] = "waiting_for_new_email"
-    elif message.text == "email":
-        check_data={"two_factor_ae":"True"}
+    if message.text == "email":
+        check_data={"two_factor_ae":"False"}
         if db.check_multiple_conditions(check_data):
-            bot.send_message(message.chat.id, "Email 2FA delete❌ ")
-            old_email = user_new_emails[user_id]
-            fa_email(old_email)
-        else:
             bot.send_message(message.chat.id, "Email 2FA Connect  ✅")
             old_email = user_new_emails[user_id]
             fa_email(old_email)
-    elif message.text == "number":
+            print("1")
+        else:
+            bot.send_message(message.chat.id, "Email 2FA delete ❌")
+            old_email = user_new_emails[user_id]
+            fa_email(old_email)
+            print("2")
+    if message.text == "number":
         check_data={"two_factor_an":"True"}
         if db.check_multiple_conditions(check_data):
             bot.send_message(message.chat.id, "number 2FA delete ❌")
@@ -361,24 +380,24 @@ def buttonsupport(message):
             bot.send_message(message.chat.id, "Number 2FA Connect  ✅")
             old_email = user_new_emails[user_id]
             fa_number(old_email)
-    elif message.text == "app autificator":
-        check_data={"two_factor_aa":"True"}
+    if message.text == "app autificator":
+        check_data={"two_factor_aa":"False"}
         if db.check_multiple_conditions(check_data):
-            bot.send_message(message.chat.id, "App 2FA delete ❌")
-            old_email = user_new_emails[user_id]
-            fa_app(old_email)
-        else:
             bot.send_message(message.chat.id, "App 2FA Connect  ✅")
             old_email = user_new_emails[user_id]
             fa_app(old_email)
-    elif message.text == "key to enter":
-        check_data={"two_factor_ak":"True"}
+        else:
+            bot.send_message(message.chat.id, "App 2FA delete ❌")
+            old_email = user_new_emails[user_id]
+            fa_app(old_email)
+    if message.text == "key to enter":
+        check_data={"two_factor_ak":"False"}
         if db.check_multiple_conditions(check_data):
-            bot.send_message(message.chat.id, "Key 2FA delete ❌")
+            bot.send_message(message.chat.id, "Key 2FA Connect ✅ ")
             old_email = user_new_emails[user_id]
             fa_key(old_email)
         else:
-            bot.send_message(message.chat.id, "Key 2FA Connect ✅ ")
+            bot.send_message(message.chat.id, "Key 2FA delete ❌")
             old_email = user_new_emails[user_id]
             fa_key(old_email)
     if message.text == "Password reset":
@@ -482,7 +501,7 @@ information required for the new process. Please confirm the need for resetting.
     if message.text=="Appealing KYC rejection":
         bot.send_message(user_id, "Write why Appealing your KYC rejection:?")
         user_state[user_id] = "waiting_for_new_appealing"
-
-
+    if message.text=="Write to support":
+        bot.send_message(user_id, "Write command /WriteToSupport (YOUR Problem) ")
 if __name__=="__main__":
     bot.infinity_polling()
