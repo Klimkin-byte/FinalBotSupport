@@ -22,7 +22,7 @@ needHelp = []
 
 if not os.path.exists(SAVE_FOLDER):
     os.makedirs(SAVE_FOLDER)
-bot=telebot.TeleBot("")
+bot=telebot.TeleBot("111")
 
 
 def typessupport(user_id):
