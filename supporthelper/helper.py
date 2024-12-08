@@ -174,7 +174,7 @@ def kys_reset_types(answer_callback):
     check_data = {"KYSREST": "False"}
     if db.check_multiple_conditions(check_data):
         updated_rows1 = db.update_user_field(data, "KYSREST", "False")
-        updated_rows = db.update_user_field(data, "KYSDATA", "answer_callback")
+        updated_rows = db.update_user_field(data, "KYSDATA", answer_callback)
         if updated_rows and updated_rows1:
             print("Update.")
         else:
