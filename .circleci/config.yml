@@ -1,135 +1,51 @@
 version: 2.1
 
-executors:
-  python-executor:
-    docker:
-      - image: cimg/python:3.12
-
 jobs:
-  run_unit_tests:
-    executor: python-executor
+  test:
+    docker:
+      - image: circleci/python:3.8
+    working_directory: ~/repo
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - v2-dependencies-{{ checksum "requirements.txt" }}
+      - checkout  # Checkout the code from the repository
       - run:
-          name: Проверка наличия requirements.txt
-          command: |
-            if [ ! -f requirements.txt ]; then
-              echo "Ошибка: файл requirements.txt не найден!"
-              exit 1
-            fi
-      - run:
-          name: Установка PYTHONPATH
-          command: echo 'export PYTHONPATH=$PYTHONPATH:/home/circleci/project' >> $BASH_ENV
-      - run:
-          name: Установка зависимостей и запуск юнит-тестов
+          name: Install dependencies
           command: |
             python -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
-            pip install -r requirements.txt
-            pytest --maxfail=5 --disable-warnings
-      - save_cache:
-          paths:
-            - ~/.cache/pip
-            - venv/
-          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_SHA1 }}
+            pip install -r requirements.txt  # Install dependencies from your requirements.txt file
+      - run:
+          name: Run tests
+          command: |
+            . venv/bin/activate
+            pytest --maxfail=1 --disable-warnings -q  # Run pytest with useful options
+      - store_test_results:
+          path: test_results  # Store the test results so CircleCI can display them
 
-  create_env_and_run_bot:
-    executor: python-executor
+  deploy:
+    docker:
+      - image: circleci/python:3.8
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v2-dependencies-{{ checksum "requirements.txt" }}
       - run:
-          name: Проверка наличия requirements.txt
-          command: |
-            if [ ! -f requirements.txt ]; then
-              echo "Ошибка: файл requirements.txt не найден!"
-              exit 1
-            fi
-      - run:
-          name: Установка PYTHONPATH
-          command: echo 'export PYTHONPATH=$PYTHONPATH:/home/circleci/project' >> $BASH_ENV
-      - run:
-          name: Создание файла .env
-          command: |
-            echo "TOKEN=${TOKEN}" > .env
-            echo "ADMIN_ID=${ADMIN_ID}" >> .env
-            echo "DATABASE_URL=/home/circleci/project/data_base/database.db" >> .env
-            echo "Содержимое файла .env:"
-            cat .env
-          when: always
-      - run:
-          name: Проверка и создание директории базы данных
-          command: |
-            mkdir -p /home/circleci/project/data_base
-      - run:
-          name: Установка окружения и запуск бота
+          name: Install dependencies
           command: |
             python -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
             pip install -r requirements.txt
-            python botsupport/new_support.py
-          no_output_timeout: 15m
-      - save_cache:
-          paths:
-            - ~/.cache/pip
-            - venv/
-          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_SHA1 }}
-
-  create_env_and_run_bot_with_db:
-    executor: python-executor
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - v2-dependencies-{{ checksum "requirements.txt" }}
       - run:
-          name: Проверка наличия requirements.txt
+          name: Deploy (example step)
           command: |
-            if [ ! -f requirements.txt ]; then
-              echo "Ошибка: файл requirements.txt не найден!"
-              exit 1
-            fi
-      - run:
-          name: Установка PYTHONPATH
-          command: echo 'export PYTHONPATH=$PYTHONPATH:/home/circleci/project' >> $BASH_ENV
-      - run:
-          name: Создание файла .env
-          command: |
-            echo "TOKEN=${TOKEN}" > .env
-            echo "ADMIN_ID=${ADMIN_ID}" >> .env
-            echo "DATABASE_URL=/home/circleci/project/data_base/database.db" >> .env
-            echo "Содержимое файла .env:"
-            cat .env
-          when: always
-      - run:
-          name: Проверка и создание директории базы данных
-          command: |
-            mkdir -p /home/circleci/project/data_base
-      - run:
-          name: Установка окружения и запуск бота с БД
-          command: |
-            python -m venv venv
-            . venv/bin/activate
-            pip install --upgrade pip
-            pip install -r requirements.txt
-            python botsupport/new_support.py
-          no_output_timeout: 10m
-      - save_cache:
-          paths:
-            - ~/.cache/pip
-            - venv/
-          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_SHA1 }}
+            echo "Deploying the application..."
+            # Add your deployment commands here, like uploading to AWS, GCP, or running Docker containers
+            # Example: aws s3 cp your_file s3://your-bucket-name
 
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - run_unit_tests
-      - create_env_and_run_bot
+      - test  # Run the tests first
+      - deploy:
+          requires:
+            - test  # Deploy only if tests pass
