@@ -4,7 +4,7 @@ config_1 = dotenv_values("../.env")
 #db_path =config_1.get('DATABASE_PATH')
 class Database:
     def __init__(self, db_path=None):
-        self.db_path = db_path or config_1.get('DATABASE_PATH')
+        self.db_path = db_path or config_1.get('DATABASE_PATH','default_database.db')
         self.connection = sqlite3.connect(db_path)
         self.create_table()
 
