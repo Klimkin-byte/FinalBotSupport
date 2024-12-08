@@ -9,13 +9,18 @@ import os
 from data_base.data_base_users import Database
 from telebot.types import ReplyKeyboardRemove
 
-db = Database("C:/Users/Dreimond/PycharmProjects/FinalBotSupport/data_base/database.db")
+
+
+
 
 SAVE_FOLDER = 'photos'
 
 config_1 = dotenv_values("../.env")
 TOKEN = config_1.get('TOKEN')
 ADMIN_ID = config_1.get('ADMIN_ID')
+db_path = config_1.get('DATABASE_PATH')
+db = Database(db_path)
+
 
 user_emails = {}
 user_state = {}

@@ -1,8 +1,11 @@
 #from data_base.data_base_users import *
 import sqlite3
 from data_base.data_base_users import Database
-
-db = Database("C:/Users/Dreimond/PycharmProjects/FinalBotSupport/data_base/database.db")
+from dotenv import dotenv_values
+#some=("C:/Users/Dreimond/PycharmProjects/FinalBotSupport/data_base/database.db")
+config_1 = dotenv_values("../.env")
+db_path = config_1.get('DATABASE_PATH')
+db = Database(db_path)
 email_for_function=[]
 
 def email_for_all(old_email):
