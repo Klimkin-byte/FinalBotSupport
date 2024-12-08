@@ -14,17 +14,17 @@ jobs:
           keys:
             - v2-dependencies-{{ checksum "requirements.txt" }}
       - run:
-          name: Check for requirements.txt
+          name: Проверка наличия requirements.txt
           command: |
             if [ ! -f requirements.txt ]; then
-              echo "Error: requirements.txt not found!"
+              echo "Ошибка: файл requirements.txt не найден!"
               exit 1
             fi
       - run:
-          name: Set PYTHONPATH
+          name: Установка PYTHONPATH
           command: echo 'export PYTHONPATH=$PYTHONPATH:/home/circleci/project' >> $BASH_ENV
       - run:
-          name: Install Dependencies and Run Unit Tests
+          name: Установка зависимостей и запуск юнит-тестов
           command: |
             python -m venv venv
             . venv/bin/activate
@@ -34,8 +34,8 @@ jobs:
       - save_cache:
           paths:
             - ~/.cache/pip
-            - venv
-          key: v2-dependencies-{{ checksum "requirements.txt" }}
+            - venv/
+          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_SHA1 }}
 
   create_env_and_run_bot:
     executor: python-executor
@@ -45,25 +45,30 @@ jobs:
           keys:
             - v2-dependencies-{{ checksum "requirements.txt" }}
       - run:
-          name: Check for requirements.txt
+          name: Проверка наличия requirements.txt
           command: |
             if [ ! -f requirements.txt ]; then
-              echo "Error: requirements.txt not found!"
+              echo "Ошибка: файл requirements.txt не найден!"
               exit 1
             fi
       - run:
-          name: Set PYTHONPATH
+          name: Установка PYTHONPATH
           command: echo 'export PYTHONPATH=$PYTHONPATH:/home/circleci/project' >> $BASH_ENV
       - run:
-          name: Create .env file
+          name: Создание файла .env
           command: |
             echo "TOKEN=${TOKEN}" > .env
             echo "ADMIN_ID=${ADMIN_ID}" >> .env
-            echo ".env file content:"
+            echo "DATABASE_URL=/home/circleci/project/data_base/database.db" >> .env
+            echo "Содержимое файла .env:"
             cat .env
           when: always
       - run:
-          name: Setup Environment and Run Bot
+          name: Проверка и создание директории базы данных
+          command: |
+            mkdir -p /home/circleci/project/data_base
+      - run:
+          name: Установка окружения и запуск бота
           command: |
             python -m venv venv
             . venv/bin/activate
@@ -74,8 +79,8 @@ jobs:
       - save_cache:
           paths:
             - ~/.cache/pip
-            - venv
-          key: v2-dependencies-{{ checksum "requirements.txt" }}
+            - venv/
+          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_SHA1 }}
 
   create_env_and_run_bot_with_db:
     executor: python-executor
@@ -85,25 +90,30 @@ jobs:
           keys:
             - v2-dependencies-{{ checksum "requirements.txt" }}
       - run:
-          name: Check for requirements.txt
+          name: Проверка наличия requirements.txt
           command: |
             if [ ! -f requirements.txt ]; then
-              echo "Error: requirements.txt not found!"
+              echo "Ошибка: файл requirements.txt не найден!"
               exit 1
             fi
       - run:
-          name: Set PYTHONPATH
+          name: Установка PYTHONPATH
           command: echo 'export PYTHONPATH=$PYTHONPATH:/home/circleci/project' >> $BASH_ENV
       - run:
-          name: Create .env file
+          name: Создание файла .env
           command: |
             echo "TOKEN=${TOKEN}" > .env
             echo "ADMIN_ID=${ADMIN_ID}" >> .env
-            echo ".env file content:"
+            echo "DATABASE_URL=/home/circleci/project/data_base/database.db" >> .env
+            echo "Содержимое файла .env:"
             cat .env
           when: always
       - run:
-          name: Setup Environment and Run Bot with DB
+          name: Проверка и создание директории базы данных
+          command: |
+            mkdir -p /home/circleci/project/data_base
+      - run:
+          name: Установка окружения и запуск бота с БД
           command: |
             python -m venv venv
             . venv/bin/activate
@@ -114,17 +124,12 @@ jobs:
       - save_cache:
           paths:
             - ~/.cache/pip
-            - venv
-          key: v2-dependencies-{{ checksum "requirements.txt" }}
+            - venv/
+          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_SHA1 }}
 
 workflows:
   version: 2
   build_and_test:
     jobs:
       - run_unit_tests
-      - create_env_and_run_bot:
-          requires:
-            - run_unit_tests
-      - create_env_and_run_bot_with_db:
-          requires:
-            - create_env_and_run_bot
+      - create_env_and_run_bot
