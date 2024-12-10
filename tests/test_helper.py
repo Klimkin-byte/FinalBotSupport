@@ -272,7 +272,7 @@ def test_changes_no_reactivation():
     else:
         mock_dt.update_user_field.assert_called_once_with("old_email", "Account", "True")
 
-TEST_FILE_PATH = "C:/Users/Dreimond/Desktop/inpython.txt"
+TEST_FILE_PATH = "C:/Users/Dreimond/Desktop/whyme.txt"
 
 
 def reademail_name_mock(existing_content):
@@ -299,8 +299,8 @@ def prepare_file():
     if os.path.exists(TEST_FILE_PATH):
         os.remove(TEST_FILE_PATH)
     yield
-    if os.path.exists(TEST_FILE_PATH):
-        os.remove(TEST_FILE_PATH)
+    # if os.path.exists(TEST_FILE_PATH):
+    #     os.remove(TEST_FILE_PATH)
 
 
 def test_inheritance_data_file_not_found(prepare_file):
@@ -367,9 +367,7 @@ def test_handle_photo_file(cleanup_test_file):
         saved_data = f.read()
     assert saved_data == test_data, "Содержимое файла не совпадает с ожидаемым"
 def test_handle_photo_overwrites_file(cleanup_test_file):
-    """
-    Тест: функция должна корректно перезаписывать файл, если он уже существует.
-    """
+
     initial_data = b"old_data"
     new_data = b"new_data"
     file_name = cleanup_test_file
@@ -463,8 +461,8 @@ def prepare_file_appealing():
     if os.path.exists(TEST_FILE_PATH2):
         os.remove(TEST_FILE_PATH2)
     yield
-    if os.path.exists(TEST_FILE_PATH2):
-        os.remove(TEST_FILE_PATH2)
+    # if os.path.exists(TEST_FILE_PATH2):
+    #     os.remove(TEST_FILE_PATH2)
 
 
 def appealing_data_file_not_found(prepare_file_appealing):
