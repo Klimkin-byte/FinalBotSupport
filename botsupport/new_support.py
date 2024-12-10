@@ -16,7 +16,7 @@ config_1 = dotenv_values("../.env")
 # ADMIN_ID = config_1.get('ADMIN_ID')
 #db_path = config_1.get('DATABASE_PATH')
 
-db = Database(db_path)
+db = Database(DATABASE_URL)
 
 SAVE_FOLDER = 'photos'
 
