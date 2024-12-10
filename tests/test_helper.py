@@ -294,13 +294,12 @@ def inheritance_data_test(data, user_id):
     return " ".join(list_data)
 
 
-# @pytest.fixture
-# def prepare_file():
-#     if os.path.exists(TEST_FILE_PATH):
-#         os.remove(TEST_FILE_PATH)
-#     yield
-    # if os.path.exists(TEST_FILE_PATH):
-    #     os.remove(TEST_FILE_PATH)
+@pytest.fixture
+def prepare_file():
+    if os.path.exists(TEST_FILE_PATH):
+        with open(TEST_FILE_PATH, "w", encoding="utf-8") as file:
+            file.truncate(0)  # Очищает содержимое файла, не удаляя его.
+    yield
 
 
 def test_inheritance_data_file_not_found(prepare_file):
@@ -456,14 +455,12 @@ def appealing_data_test(user_appealing_text, user_id):
     return " ".join(list_data)
 
 
-# @pytest.fixture
-# def prepare_file_appealing():
-#     if os.path.exists(TEST_FILE_PATH2):
-#         os.remove(TEST_FILE_PATH2)
-#     yield
-#     # if os.path.exists(TEST_FILE_PATH2):
-#     #     os.remove(TEST_FILE_PATH2)
-
+@pytest.fixture
+def prepare_file_appealing():
+    if os.path.exists(TEST_FILE_PATH):
+        with open(TEST_FILE_PATH2, "w", encoding="utf-8") as file:
+            file.truncate(0)  # Очищает содержимое файла, не удаляя его.
+    yield
 
 def appealing_data_file_not_found(prepare_file_appealing):
     result = appealing_data_test("Some info", "1234")
