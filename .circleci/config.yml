@@ -4,6 +4,7 @@ executors:
   python-executor:
     docker:
       - image: cimg/python:3.12  # Используем образ с Python 3.12
+    working_directory: /home/circleci/project  # Устанавливаем рабочую директорию
 
 jobs:
   run_unit_tests:
@@ -62,9 +63,6 @@ jobs:
             echo "Содержимое файла .env:"
             cat .env
           when: always
-      - run:
-          name: Проверка и создание директории базы данных
-          command: mkdir -p /home/circleci/project/data_base
       - run:
           name: Установка окружения и запуск бота
           command: |
