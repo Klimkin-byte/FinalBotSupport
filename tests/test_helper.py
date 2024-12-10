@@ -296,11 +296,13 @@ def inheritance_data_test(data, user_id):
 
 @pytest.fixture
 def prepare_file():
-    if os.path.exists(TEST_FILE_PATH):
+    os.makedirs(os.path.dirname(TEST_FILE_PATH), exist_ok=True)
+    if not os.path.exists(TEST_FILE_PATH):
+        open(TEST_FILE_PATH, "w", encoding="utf-8").close()
+    else:
         with open(TEST_FILE_PATH, "w", encoding="utf-8") as file:
-            file.truncate(0)  # Очищает содержимое файла, не удаляя его.
+            file.truncate(0)
     yield
-
 
 def test_inheritance_data_file_not_found(prepare_file):
     result = inheritance_data_test("Some info", "1234")
