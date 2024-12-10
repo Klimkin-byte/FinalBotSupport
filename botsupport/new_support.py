@@ -1,6 +1,5 @@
 from telebot import types
 import telebot
-import requests
 import config
 from dotenv import dotenv_values
 from supporthelper.helper import *
@@ -8,18 +7,19 @@ from telebot.apihelper import answer_callback_query
 import os
 from data_base.data_base_users import Database
 from telebot.types import ReplyKeyboardRemove
+import json
+from config.env_config import *
 
 
+config_1 = dotenv_values("../.env")
+# TOKEN = config_1.get('TOKEN')
+# ADMIN_ID = config_1.get('ADMIN_ID')
+#db_path = config_1.get('DATABASE_PATH')
 
-
+db = Database(db_path)
 
 SAVE_FOLDER = 'photos'
 
-config_1 = dotenv_values("../.env")
-TOKEN = config_1.get('TOKEN')
-ADMIN_ID = config_1.get('ADMIN_ID')
-db_path = config_1.get('DATABASE_PATH')
-db = Database(db_path)
 
 
 user_emails = {}
@@ -33,6 +33,7 @@ needHelp = []
 if not os.path.exists(SAVE_FOLDER):
     os.makedirs(SAVE_FOLDER)
 bot=telebot.TeleBot(TOKEN)
+bot.timeout = 30
 
 
 def typessupport(user_id):
