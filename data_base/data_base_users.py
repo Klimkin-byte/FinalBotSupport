@@ -1,9 +1,10 @@
 import sqlite3
 from dotenv import dotenv_values
+from config.env_config import *
 config_1 = dotenv_values("../.env")
 
 class Database:
-    def __init__(self, db_path=config_1.get('DATABASE_URL')):
+    def __init__(self, db_path="data_base.database.db"):
         self.db_path = db_path
         self.connection = sqlite3.connect(db_path)
         self.create_table()
