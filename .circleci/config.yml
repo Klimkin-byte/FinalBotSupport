@@ -57,7 +57,6 @@ jobs:
           name: Создание файла .env
           command: |
             echo "TOKEN=${TOKEN}" > .env
-            echo "ADMIN_ID=${ADMIN_ID}" >> .env
             echo "DATABASE_URL=/home/circleci/project/data_base/database.db" >> .env
             echo "Содержимое файла .env:"
             cat .env
@@ -100,7 +99,6 @@ jobs:
           name: Создание файла .env
           command: |
             echo "TOKEN=${TOKEN}" > .env
-            echo "ADMIN_ID=${ADMIN_ID}" >> .env
             echo "DATABASE_URL=/home/circleci/project/data_base/database.db" >> .env
             echo "Содержимое файла .env:"
             cat .env
