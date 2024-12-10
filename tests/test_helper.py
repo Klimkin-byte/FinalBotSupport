@@ -272,7 +272,7 @@ def test_changes_no_reactivation():
     else:
         mock_dt.update_user_field.assert_called_once_with("old_email", "Account", "True")
 
-TEST_FILE_PATH = "C:/Users/Dreimond/Desktop/whyme.txt"
+TEST_FILE_PATH = "C:/Users/Dreimond/Desktop/inpython.txt"
 
 
 def reademail_name_mock(existing_content):
@@ -294,11 +294,11 @@ def inheritance_data_test(data, user_id):
     return " ".join(list_data)
 
 
-@pytest.fixture
-def prepare_file():
-    if os.path.exists(TEST_FILE_PATH):
-        os.remove(TEST_FILE_PATH)
-    yield
+# @pytest.fixture
+# def prepare_file():
+#     if os.path.exists(TEST_FILE_PATH):
+#         os.remove(TEST_FILE_PATH)
+#     yield
     # if os.path.exists(TEST_FILE_PATH):
     #     os.remove(TEST_FILE_PATH)
 
@@ -456,13 +456,13 @@ def appealing_data_test(user_appealing_text, user_id):
     return " ".join(list_data)
 
 
-@pytest.fixture
-def prepare_file_appealing():
-    if os.path.exists(TEST_FILE_PATH2):
-        os.remove(TEST_FILE_PATH2)
-    yield
-    # if os.path.exists(TEST_FILE_PATH2):
-    #     os.remove(TEST_FILE_PATH2)
+# @pytest.fixture
+# def prepare_file_appealing():
+#     if os.path.exists(TEST_FILE_PATH2):
+#         os.remove(TEST_FILE_PATH2)
+#     yield
+#     # if os.path.exists(TEST_FILE_PATH2):
+#     #     os.remove(TEST_FILE_PATH2)
 
 
 def appealing_data_file_not_found(prepare_file_appealing):
