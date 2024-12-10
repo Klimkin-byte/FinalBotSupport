@@ -1,37 +1,9 @@
 import sqlite3
 from dotenv import dotenv_values
-#from config.env_config import *
-import os
 config_1 = dotenv_values("../.env")
 
 class Database:
-    def __init__(self, db_path=None):
-        # Если путь не указан, используем переменную окружения
-        if db_path is None:
-            # Чтение из переменной окружения DATABASE_URL
-            db_path = os.getenv("DATABASE_URL", "data_base/database.db")
-
-        # Проверяем, является ли путь строкой и не равен ли None
-        if not isinstance(db_path, str):
-            raise ValueError(f"Неверный тип пути: {db_path}, должен быть строкой.")
-
-        # Преобразуем путь в абсолютный, если он относительный
-        if not os.path.isabs(db_path):
-            db_path = os.path.join(os.getcwd(), db_path)
-
-        self.db_path = db_path
-
-        # Проверка существования базы данных и создание нужной директории, если она не существует
-        if not os.path.exists(os.path.dirname(self.db_path)):
-            os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
-
-        # Пытаемся подключиться к базе данных
-        try:
-            self.connection = sqlite3.connect(self.db_path)
-            self.create_table()  # Если подключение успешно, создаём таблицу
-        except sqlite3.Error as e:
-            print(f"Ошибка подключения к базе данных: {e}")
-            raise
+    def __init__(self, db_path="data_base/database.db"):
         self.db_path = db_path
         self.connection = sqlite3.connect(db_path)
         self.create_table()
