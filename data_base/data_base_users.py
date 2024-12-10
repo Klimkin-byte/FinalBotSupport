@@ -4,7 +4,10 @@ from dotenv import dotenv_values
 config_1 = dotenv_values("../.env")
 
 class Database:
-    def __init__(self, db_path="data_base.database.db"):
+    def __init__(self, db_path=None):
+        # Если db_path не передан, берем из переменной окружения DATABASE_URL
+        if db_path is None:
+            db_path = os.getenv("DATABASE_URL", "data_base/database.db")
         self.db_path = db_path
         self.connection = sqlite3.connect(db_path)
         self.create_table()
