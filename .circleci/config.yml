@@ -29,13 +29,12 @@ jobs:
             python -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
-            pip install -r requirements.txt
+            pip install -r requirements.txt --no-cache-dir
             pytest --maxfail=5 --disable-warnings
       - save_cache:
           paths:
             - ~/.cache/pip
-            - venv/
-          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_SHA1 }}
+          key: v2-dependencies-{{ checksum "requirements.txt" }}
 
   create_env_and_run_bot:
     executor: python-executor
@@ -65,23 +64,22 @@ jobs:
           when: always
       - run:
           name: Проверка и создание директории базы данных
-          command: |
-            mkdir -p /home/circleci/project/data_base
+          command: mkdir -p /home/circleci/project/data_base
       - run:
           name: Установка окружения и запуск бота
           command: |
             python -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
-            pip install -r requirements.txt
+            pip install -r requirements.txt --no-cache-dir
             python botsupport/new_support.py
           no_output_timeout: 15m
       - save_cache:
           paths:
             - ~/.cache/pip
-            - venv/
-          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_SHA1 }}
-create_env_and_run_bot_with_db:
+          key: v2-dependencies-{{ checksum "requirements.txt" }}
+
+  create_env_and_run_bot_with_db:
     executor: python-executor
     steps:
       - checkout
@@ -109,26 +107,26 @@ create_env_and_run_bot_with_db:
           when: always
       - run:
           name: Проверка и создание директории базы данных
-          command: |
-            mkdir -p /home/circleci/project/data_base
+          command: mkdir -p /home/circleci/project/data_base
       - run:
           name: Установка окружения и запуск бота с БД
           command: |
             python -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
-            pip install -r requirements.txt
+            pip install -r requirements.txt --no-cache-dir
             python botsupport/new_support.py
           no_output_timeout: 10m
       - save_cache:
           paths:
             - ~/.cache/pip
-            - venv/
-          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_SHA1 }}
+          key: v2-dependencies-{{ checksum "requirements.txt" }}
 
 workflows:
   version: 2
   build_and_test:
     jobs:
       - run_unit_tests
-      - create_env_and_run_bot
+      - create_env_and_run_bot:
+          requires:
+            - run_unit_tests
